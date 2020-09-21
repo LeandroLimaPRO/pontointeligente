@@ -1,0 +1,43 @@
+# spring-boot-docker/docker-compose.yml
+version: '3.1'
+
+services:
+
+    mysql_pulse:
+        image: mysql:5.7
+        command: 
+            --default-time-zone=-03:00
+        restart: always
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: 1234
+            MYSQL_USER : pulse
+            MYSQL_PASSWORD : 1234
+            MYSQL_DATABASE: pulsedb
+        networks:
+            - pulse-net
+    api_pulse:
+        build: ./provarh
+        restart: always
+        ports:
+            - 8086:8086
+        networks: 
+            - pulse-net
+        depends_on: 
+            - mysql_pulse
+
+    front-pulse:
+        build: ./front/front-provarh
+        restart: always
+        ports:
+            - 3000:3000
+        networks:
+            - pulse-net
+        depends_on:
+            - mysql_pulse
+            - api_pulse
+networks: 
+    pulse-net: 
+        driver: bridge
+
